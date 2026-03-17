@@ -1,5 +1,7 @@
 # Logging & Approval Schema
 
+本阶段默认将日志写入飞书多维表格（Bitable）。建议字段：`序号`（自动）、`chat_id`、`task_id`、`actor`、`target`、`action`、`content`、`timestamp`、`status`。也可同步写数据库，但必须保证飞书表格能实时查看。
+
 ## Log Table (Recommended)
 | Field | Type | Description |
 | --- | --- | --- |

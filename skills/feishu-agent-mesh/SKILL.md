@@ -19,11 +19,26 @@ description: >-
 4. **落地 Workflow** —— 参照 [references/workflow-templates.md](references/workflow-templates.md) 运行「指派协作」或「无领导讨论」两类模板。
 5. **日志 & 审批** —— 按 [references/logging-schema.md](references/logging-schema.md) 设计日志字段、审批节点，确保所有跨机器人消息都有据可查。
 
+### 必须先向用户索取的信息
+在启用本 Skill 之前，务必向真人用户明确索要以下数据（缺一不可）：
+
+| 信息 | 用途 |
+| --- | --- |
+| 每个飞书机器人的 `app_id`、`app_secret`、`verification token`、`encrypt key` | 配置事件订阅、验证消息来源 |
+| 机器人在目标群聊中的 `open_id` / `sessionKey` | 让 Relay 正确 @ 到各机器人 |
+| 可写入的飞书多维表格（日志存储）Base ID / Table ID / 字段名 | Phase 1 默认把日志落在该表格，满足“日志存储在飞书表格”的要求 |
+| 机器人自身的调用入口（HTTP `/tools/invoke` URL 或 CLI 命令）及鉴权方式 | 让 Relay 能够执行具体能力 |
+| 任务审批/白名单配置（哪些群、哪些节点需要人类确认） | 限定机器人只针对授权任务行动 |
+
+> 没有拿到这些信息前，不要启动协作流程；与用户确认后再投入使用。
+
+
 ## 1. 关键原则
 - **前台不变**：群里仍是现有机器人（小呱、小咕…），任何扩展只发生在后台。
 - **共享上下文**：所有机器人通过同一个 Relay/队列同步讨论内容与任务状态。
 - **多群隔离**：以 `chat_id` 维度存储上下文、日志、审批规则，避免串线。
 - **渐进式演进**：先跑 MVP，再升级到推荐架构，最后再加高级特性。
+- **任务优先**：机器人之间的沟通必须围绕真人用户当前指派的任务展开，禁止跑题或多余互动；任务结束后立即停止动作，并向任务发起者汇报结果。
 
 ## 2. 快速启动（MVP ≤ 1h）
 1. **共享存储**：建一个飞书多维表格或 SQLite/JSON 文件，字段至少包括 `chat_id`、`thread_id`、`message`, `actor`, `task_state`。

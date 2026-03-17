@@ -2,6 +2,7 @@
 
 ## Phase 0 — MVP (≤ 1 hour)
 - [ ] 选择共享存储（飞书多维表格 / SQLite / JSON）。
+- [ ] 若使用飞书多维表格，创建字段：chat_id、task_id、actor、target、action、content、timestamp、status。
 - [ ] 为每个机器人添加轮询任务（≤60s），读取“待处理”记录。
 - [ ] 定义记录字段：`chat_id`, `thread_id`, `message`, `actor`, `assignee`, `state`。
 - [ ] 机器人发言后写回记录，标记 `handled_by`。
