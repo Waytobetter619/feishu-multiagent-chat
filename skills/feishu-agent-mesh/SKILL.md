@@ -41,6 +41,18 @@ description: >-
 - **任务优先**：机器人之间的沟通必须围绕真人用户当前指派的任务展开，禁止跑题或多余互动；任务结束后立即停止动作，并向任务发起者汇报结果。
 
 ## 2. 快速启动（MVP ≤ 1h）
+### 一次性自建回调服务（推荐）
+为所有机器人统一收集 open_id / chat_id，只做一次配置即可：
+1. 部署 `scripts/feishu-callback-server.js`（Node.js + Express）。
+   - `npm i express body-parser node-fetch crypto`
+   - 把 APP_ID、APP_SECRET、Encrypt Key、Verification Token、Bitable app/table、列名写到环境变量。
+2. 把服务挂到自己的 HTTPS 域名（如 `https://relay.example.com/feishu/callback`）。
+3. 在飞书开发者后台给每个机器人配置事件订阅 `im.message.receive_v1`，回调地址都指向该服务。
+4. 让目标群的成员各 @ 一次机器人，服务会自动把 open_id/消息写进飞书表格。
+5. Relay 周期性从表格拉取记录 → 一次性建立 open_id + sessionKey 映射；后续无需再手动收集。
+
+若暂时无法部署服务，可使用飞书“事件日志”导出 JSON，再按相同字段手工写入表格，但推荐尽早启用统一回调，这样每个用户只需授权一次。
+
 1. **共享存储**：建一个飞书多维表格或 SQLite/JSON 文件，字段至少包括 `chat_id`、`thread_id`、`message`, `actor`, `task_state`。
 2. **机器人轮询**：在每个机器人实例里添加一个定时任务（60s 内），读取共享存储中“自己未处理”的记录。
 3. **写回策略**：机器人在群里发言后，同时写入共享存储，供其他机器人读取。

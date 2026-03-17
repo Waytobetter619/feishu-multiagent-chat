@@ -10,7 +10,8 @@
 
 ## Phase 1 — Recommended Architecture
 - [ ] 搭建 Relay Web 服务（Node.js/Python）。
-- [ ] 为每个飞书机器人配置事件订阅 → Relay。（校验签名、重试策略）。
+- [ ] 如需先捕获 open_id，部署 `scripts/feishu-callback-server.js` 并接管所有 message.receive 事件。
+- [ ] 为每个飞书机器人配置事件订阅 → Relay/回调服务。（校验签名、重试策略）。
 - [ ] 创建数据库：
   - [ ] `contexts` 表：chat_id, thread_id, last_actor, summary, payload。
   - [ ] `logs` 表：log_id, chat_id, actor, target, action, content, timestamp。
